@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main extends Base {
-    private static final String INPUT = "2019\\day8-input.txt";
+    private static final String INPUT = "2019\\day8-input.txt.txt";
     private static String inputString = "";
     private Map<Long, String> instructions;
 

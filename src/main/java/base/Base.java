@@ -4,13 +4,38 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public abstract class Base {
     public BufferedReader input;
 
     public void mainMethod(String inputFile) throws IOException {
-        File file = new File("D:\\projects\\adventofcode\\src\\main\\resources\\"+ inputFile);
-        input = new BufferedReader(new FileReader(file));
+
+        // get the file url, not working in JAR file.
+        URL resource = getClass().getClassLoader().getResource(inputFile);
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found!");
+        } else {
+
+            // failed if files have whitespaces or special characters
+            //return new File(resource.getFile());
+
+            File file = null;
+            try {
+                file = new File(resource.toURI());
+                input = new BufferedReader(new FileReader(file));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                throw new IOException("File not found");
+            }
+
+        }
+
+
+        //File file = new File("D:\\projects\\adventofcode\\src\\main\\resources\\"+ inputFile);
+        //File file = new File("/src/main/resources/"+ inputFile);
+        //input = new BufferedReader(new FileReader(file));
     }
 
     public abstract void part1() throws IOException;
