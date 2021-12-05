@@ -25,7 +25,7 @@ public class Main extends Base {
         main.mainMethod(INPUT);
         main.prepare();
         System.out.println("PART1:");
-        main.part1();
+        //main.part1();
         System.out.println("PART2:");
         main.part2();
     }
@@ -54,6 +54,29 @@ public class Main extends Base {
 
     @Override
     public void part2() throws IOException {
+        int total = 0;
+        for (String instruction : instructions) {
+            String[] values = instruction.split("\\t");
 
+            OUTER:
+            for (String value1 : values) {
+                for (String value2 : values) {
+                    int val1 = Integer.valueOf(value1);
+                    int val2 = Integer.valueOf(value2);
+
+                    if (val1 != val2) {
+                        if (val1 % val2 == 0) {
+                            total += val1 / val2;
+                            break OUTER;
+                        } else if (val2 % val1 == 0) {
+                            total += val2 / val1;
+                            break OUTER;
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("total: " + total);
     }
 }

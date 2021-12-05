@@ -65,7 +65,7 @@ public class Main extends Base {
     }
 
     private void cycle(boolean vision) {
-        String[][] copyGrid = copyGrid(grid);
+        String[][] copyGrid = Utils.copyGrid(grid, numberOfLines, gridWidth);
         for (int y = 0; y < numberOfLines; y++) {
             for (int x = 0; x < gridWidth; x++) {
                 copyGrid[y][x] = determineNewState(x, y, vision);
@@ -74,15 +74,7 @@ public class Main extends Base {
         grid = Arrays.copyOf(copyGrid, numberOfLines);
     }
 
-    private String[][] copyGrid(String[][] old) {
-        String[][] current = new String[numberOfLines][gridWidth];
-        for(int i=0; i < old.length; i++) {
-            for (int j = 0; j < old[i].length; j++) {
-                current[i][j] = old[i][j];
-            }
-        }
-        return current;
-    }
+
 
     private void countTotalOccupiedSeats() {
         for (int y = 0; y < numberOfLines; y++) {
