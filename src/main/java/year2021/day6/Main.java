@@ -44,15 +44,13 @@ public class Main extends Base {
             fishPerDayMap.put(day, Arrays.asList(instructions.get(0).split(",")).stream().map(Long::parseLong).filter(x -> x == day).count());
         }
 
-        List<Long> days = fishPerDayMap.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
         long newFish = 0;
-
         for (long i = 0; i < totalDays; i++) {
             for (long day = 0; day < fishPerDayMap.size(); day++) {
                 if (day == 0) {
                     newFish = fishPerDayMap.get(day);
                 } else if (day == 7) {
-                    // add 0 day fishes to day 6 again
+                    // add 0 day fishes (equal to newFish) to day 6 again
                     fishPerDayMap.put(day - 1, (fishPerDayMap.get(day) + newFish));
                 } else {
                     fishPerDayMap.put(day - 1, fishPerDayMap.get(day));
