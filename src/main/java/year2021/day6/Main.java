@@ -4,7 +4,6 @@ import base.Base;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Main extends Base {
     private static final String INPUT = "2021/day6-input.txt";
