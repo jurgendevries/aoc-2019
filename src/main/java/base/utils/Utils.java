@@ -94,6 +94,16 @@ public class Utils {
         }
     }
 
+    public static void printGrid(int width, int height, int[][] grid) {
+        for (int y = 0; y < height; y++) {
+            StringBuilder sb = new StringBuilder();
+            for (int x = 0; x < width; x++) {
+                sb.append(grid[y][x]);
+            }
+            System.out.println(sb);
+        }
+    }
+
     public static String[][] fillGrid(int width, int height) {
         String[][] grid = new String[height][width];
         for (int y = 0; y < height; y++) {
