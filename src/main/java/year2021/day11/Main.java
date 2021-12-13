@@ -45,8 +45,10 @@ public class Main extends Base {
     @Override
     public void part1() throws IOException {
         int totalLuminated = 0;
-        for (int day = 0; day < 300; day++) {
-            List<String> luminatedPoints = new ArrayList<>();
+        List<String> luminatedPoints = new ArrayList<>();
+        int day = 0;
+        while (luminatedPoints.size() < 100) {
+            luminatedPoints = new ArrayList<>();
             List<String> fullEnergyPoints = new ArrayList<>();
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -56,7 +58,6 @@ public class Main extends Base {
                     }
                 }
             }
-
 
             while (fullEnergyPoints.size() > 0) {
                 String fullEnergyPoint = fullEnergyPoints.remove(0);
@@ -82,7 +83,7 @@ public class Main extends Base {
                 }
             }
 
-            // set all 9's to 0
+            // set all > 9's to 0
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     if (grid[y][x] == 10) {
@@ -91,16 +92,16 @@ public class Main extends Base {
                 }
             }
 
-//            Utils.printGrid(width, height, grid);
-//            System.out.println();
             totalLuminated += luminatedPoints.size();
-            if (luminatedPoints.size() == 100) {
-                System.out.println("answer part 2: " + (day + 1));
+            day++;
+            if (day == 100) {
+                System.out.println("answer part 1: " + totalLuminated);
             }
-
         }
 
-        System.out.println(totalLuminated);
+        System.out.println("answer part 2: " + day);
+
+
     }
 
     @Override
