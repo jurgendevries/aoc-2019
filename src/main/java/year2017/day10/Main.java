@@ -42,10 +42,6 @@ public class Main extends Base {
             System.arraycopy(cord, currentPos, newArr, 0, listLength - currentPos);
             System.arraycopy(cord, 0, newArr, listLength - currentPos, currentPos);
             cord = newArr;
-            // TODO: determine startIndex
-//            startIndexShiftedTo = startIndexShiftedTo + step < listLength ?
-//                    startIndexShiftedTo + step :
-//                    step - (listLength - startIndexShiftedTo);
             startIndexShiftedTo = (listLength - currentPos + startIndexShiftedTo) % listLength;
             currentPos = 0;
         }
