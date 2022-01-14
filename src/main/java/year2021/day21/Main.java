@@ -1,16 +1,12 @@
 package year2021.day21;
 
 import base.Base;
-
-import javax.xml.xpath.XPath;
 import java.io.IOException;
 import java.util.*;
 
 public class Main extends Base {
     private static final String INPUT = "2021/day21-input.txt";
     private static List<String> instructions;
-//    private static int[] possibleQuantumScores = new int[] {3,4,5,4,5,6,5,6,7,5,6,7,4,5,6,5,6,7,6,7,8,5,6,7,6,7,8,7,8,9};
-    private static int[] possibleQuantumScores = new int[] {3,4,5,6,7,8,9};
     private static Map<Integer, Integer> quantumScores = new HashMap<>();
     private static long player1Wins = 0;
     private static long player2Wins = 0;
@@ -27,8 +23,8 @@ public class Main extends Base {
         Main main = new Main();
         main.mainMethod(INPUT);
         main.prepare();
-//        System.out.println("PART1:");
-//        main.part1();
+        System.out.println("PART1:");
+        main.part1();
         System.out.println("PART2:");
         main.part2();
     }
