@@ -7,13 +7,15 @@ import java.util.*;
 
 public class Main extends Base {
     private static final String INPUT = "2021/day23-2-input.txt";
+    private static final int[] HALLWAY_POSITIONS = new int[]{0,1,3,5,7,9,10};
+    private static int numberOfRooms = 2;
     private static List<String> instructions;
     private static int width;
     private static int height;
     private static String[][] grid;
     private static List<Amphipod> pods = new ArrayList<>();
     private static Map<String, Integer> types = new HashMap<>();
-    private static final int[] hallwayPositions = new int[]{0,1,3,5,7,9,10};
+
     private static Set<Integer> scores = new TreeSet<>();
     private static State rootState;
     private static Map<String, Integer> knownStates = new HashMap<>();
@@ -41,9 +43,21 @@ public class Main extends Base {
         types.put("B", 1);
         types.put("C", 2);
         types.put("D", 3);
+    }
 
+    public static void main(String[] args) throws IOException {
+        Main main = new Main();
+        main.mainMethod(INPUT);
+        main.prepare();
+//        System.out.println("PART1:");
+//        main.part1();
+        System.out.println("PART2:");
+        main.part2();
+    }
+
+    private void initiatePods() {
         int counter = 0;
-        for (int y = 1; y < 5; y++) {
+        for (int y = 1; y <= numberOfRooms; y++) {
             for (int x = 2; x <= 8; x += 2) {
                 int type = types.get(grid[y][x]);
                 pods.add(new Amphipod(counter++, type, -1, -1, x, y));
@@ -51,27 +65,30 @@ public class Main extends Base {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        Main main = new Main();
-        main.mainMethod(INPUT);
-        main.prepare();
-        System.out.println("PART1:");
-        main.part1();
-        System.out.println("PART2:");
-        main.part2();
-    }
-
     @Override
     public void part1() throws IOException {
+        initiatePods();
+        long start = System.currentTimeMillis();
         rootState = new State(pods, 0);
         children(rootState);
         System.out.println("DONE: " + scores.iterator().next());
+        long end = System.currentTimeMillis();
+        double timeInSeconds = (double) (end - start) / 1000;
+        System.out.println("Time spent: " + timeInSeconds);
 
     }
 
     @Override
     public void part2() throws IOException {
-
+        numberOfRooms = 4;
+        initiatePods();
+        long start = System.currentTimeMillis();
+        rootState = new State(pods, 0);
+        children(rootState);
+        System.out.println("DONE: " + scores.iterator().next());
+        long end = System.currentTimeMillis();
+        double timeInSeconds = (double) (end - start) / 1000;
+        System.out.println("Time spent: " + timeInSeconds);
     }
 
 
@@ -120,14 +137,11 @@ public class Main extends Base {
                             // cost to hallway
                             int costToHallway = pod.room == -1 ? 0 : pod.depth;
                             // if the partner is already there, assume it is at depth 2
-                            //boolean partnerAtDestination = currentState.pods.stream().filter(p -> p.room == destinationRoom && p.type == pod.type).findFirst().isPresent();
-//                            int cost = ((int) Math.pow(10, pod.type)) * (Math.abs((pod.room == -1 ? pod.x : pod.room) - destinationRoom) + (partnerAtDestination ? 1 : 2) + costToHallway);
                             int partnersAtDestination = (int) currentState.pods.stream().filter(p -> p.room == destinationRoom && p.type == pod.type).count();
-                            int cost = ((int) Math.pow(10, pod.type)) * (Math.abs((pod.room == -1 ? pod.x : pod.room) - destinationRoom) + (4 - partnersAtDestination) + costToHallway);
+                            int cost = ((int) Math.pow(10, pod.type)) * (Math.abs((pod.room == -1 ? pod.x : pod.room) - destinationRoom) + (numberOfRooms - partnersAtDestination) + costToHallway);
                             List<Amphipod> podsCopy = new ArrayList<>();
                             podsCopy.addAll(currentState.pods);
-//                            podsCopy.set(i, new Amphipod(pod.id, pod.type, -1, -1, destinationRoom, partnerAtDestination ? 1 : 2));
-                            podsCopy.set(i, new Amphipod(pod.id, pod.type, -1, -1, destinationRoom, 4 - partnersAtDestination));
+                            podsCopy.set(i, new Amphipod(pod.id, pod.type, -1, -1, destinationRoom, numberOfRooms - partnersAtDestination));
 
                             String stateString = getStateString(podsCopy);
                             if (isCheapestState(stateString, currentState.cost + cost)) {
@@ -150,7 +164,7 @@ public class Main extends Base {
                 }
 
                 // go to hallway
-                for (int destination : hallwayPositions) {
+                for (int destination : HALLWAY_POSITIONS) {
                     if (isHallwayBlocked(pod, currentState.pods, pod.room, destination)) {
                         continue;
                     }
@@ -159,7 +173,6 @@ public class Main extends Base {
                     podsCopy.addAll(currentState.pods);
                     podsCopy.set(i, new Amphipod(pod.id, pod.type, destination, 0, -1, -1));
 
-                    // TODO: check if state is known and can be achieved cheaper... if so than skip this one
                     String stateString = getStateString(podsCopy);
                     if (isCheapestState(stateString, currentState.cost + cost)) {
                         knownStates.put(stateString, currentState.cost + cost);
@@ -188,10 +201,6 @@ public class Main extends Base {
         return !pods.stream().filter(p -> p.room != getDestination(p.type)).findFirst().isPresent();
     }
 
-    // loc = 4, dest = 0
-    // loc = 4, dest = 10
-    // loc = 6, dest = 7
-    // loc = 3, dest = 4
     private boolean isHallwayBlocked(Amphipod pod, List<Amphipod> pods, int location, int destination) {
         return pods.stream()
                 .filter(p -> p.id != pod.id && p.x >= 0 && ((p.x <= location && p.x >= destination) || (p.x >= location && p.x <= destination)))
@@ -210,14 +219,12 @@ public class Main extends Base {
     private boolean isHome(List<Amphipod> pods, Amphipod pod) {
         int destination = getDestination(pod.type);
         if (pod.room == destination) {
-            if (pod.depth == 4) {
+            if (pod.depth == numberOfRooms) {
                 return true;
             }
 
-//            Amphipod partner = pods.stream().filter(p -> p.type == pod.type && p.id != pod.id).findFirst().get();
-//            if (partner.room == destination && partner.depth == 2) {
             int partnersHome = (int) pods.stream().filter(p -> p.type == pod.type && p.id != pod.id && p.room == destination).count();
-            if (4 - partnersHome == pod.depth) {
+            if (numberOfRooms - partnersHome == pod.depth) {
                 return true;
             }
         }
