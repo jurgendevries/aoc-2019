@@ -1,7 +1,6 @@
 package year2019.day10;
 
 import base.Base;
-import javafx.geometry.Pos;
 
 import java.io.IOException;
 import java.util.*;

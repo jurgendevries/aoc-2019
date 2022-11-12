@@ -1,7 +1,6 @@
 package year2021.day22;
 
 import base.Base;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.IOException;
 import java.util.*;
