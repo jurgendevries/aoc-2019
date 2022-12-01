@@ -10,20 +10,11 @@ import java.util.List;
 
 public class Day1 extends Base {
     private static final String INPUT = "2022/day1-input.txt";
-    private static List<String> instructions;
-
-    private void prepare() throws IOException {
-        String line;
-        instructions = new ArrayList<>();
-        while ((line = input.readLine()) != null) {
-            instructions.add(line);
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         Day1 main = new Day1();
         main.mainMethod(INPUT);
-        main.prepare();
+        main.prepareInput();
         System.out.println("PART1:");
         main.part1();
         System.out.println("PART2:");

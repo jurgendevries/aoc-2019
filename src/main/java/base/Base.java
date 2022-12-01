@@ -6,9 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Base {
     public BufferedReader input;
+    public List<String> instructions;
 
     public void mainMethod(String inputFile) throws IOException {
 
@@ -17,10 +20,6 @@ public abstract class Base {
         if (resource == null) {
             throw new IllegalArgumentException("file not found!");
         } else {
-
-            // failed if files have whitespaces or special characters
-            //return new File(resource.getFile());
-
             File file = null;
             try {
                 file = new File(resource.toURI());
@@ -31,15 +30,18 @@ public abstract class Base {
             }
 
         }
-
-
-        //File file = new File("D:\\projects\\adventofcode\\src\\main\\resources\\"+ inputFile);
-        //File file = new File("/src/main/resources/"+ inputFile);
-        //input = new BufferedReader(new FileReader(file));
     }
 
     public abstract void part1() throws IOException;
     public abstract void part2() throws IOException;
+
+    public void prepareInput() throws IOException {
+        String line;
+        instructions = new ArrayList<>();
+        while ((line = input.readLine()) != null) {
+            instructions.add(line);
+        }
+    }
 
     public Character hashContainsSequence(String hash, int numberOfMatches, Character matchingChar) {
         for (int i = 0; i < hash.length() - numberOfMatches + 1; i++) {
