@@ -4,8 +4,6 @@ import base.Base;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
 
 public class Day3 extends Base {
     private static final String INPUT = "2022/day3-input.txt";
