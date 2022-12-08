@@ -17,6 +17,8 @@ public class Day8 extends Base {
         Day8 main = new Day8();
         main.mainMethod(INPUT);
         main.prepareInput();
+        
+        long start = System.currentTimeMillis();
         height = main.instructions.size();
         width = main.instructions.get(0).length();
         grid = new int[height][width];
@@ -25,7 +27,6 @@ public class Day8 extends Base {
         }
         directions = new int[][]{{-1, 0},{0, -1}, {1, 0}, {0, 1}};
         System.out.println("PART1:");
-        long start = System.currentTimeMillis();
         main.part1();
         System.out.println("PART2:");
         main.part2();
