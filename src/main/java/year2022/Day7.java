@@ -4,15 +4,13 @@ import base.Base;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Day7 extends Base {
     private static final String INPUT = "2022/day7-input.txt";
     private Drive currentDrive;
-    private Map<String, Long> totalValues = new HashMap<>();
+    private List<Long> tValues = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         Day7 main = new Day7();
@@ -39,7 +37,7 @@ public class Day7 extends Base {
 
         calculateTotalSizes(currentDrive, "/");
 
-        long total = totalValues.values().stream().filter(s -> s <= 100000).reduce(0L, Long::sum);
+        long total = tValues.stream().filter(s -> s <= 100000).reduce(0L, Long::sum);
         System.out.println(total);
     }
 
@@ -49,8 +47,7 @@ public class Day7 extends Base {
         for (Drive child : root.getChildren()) {
             total += calculateTotalSizes(child, driveName + "/" + child.getName());
         }
-
-        totalValues.put(driveName, total);
+        tValues.add(total);
         return total;
 
     }
@@ -89,13 +86,13 @@ public class Day7 extends Base {
 
     @Override
     public void part2() throws IOException {
-        long neededMem = 30000000 - (70000000 - totalValues.get("/"));
+        long neededMem = 30000000 - (70000000 - tValues.stream().mapToLong(x -> x).max().getAsLong());
 
-        long deleteSize = totalValues.entrySet().stream()
-                .filter(x -> x.getValue() >= neededMem)
+        long deleteSize = tValues.stream()
+                .filter(x -> x >= neededMem)
                 .collect(Collectors.toList())
                 .stream()
-                .mapToLong(v -> v.getValue())
+                .mapToLong(v -> v)
                 .min().getAsLong();
 
         System.out.println(deleteSize);
