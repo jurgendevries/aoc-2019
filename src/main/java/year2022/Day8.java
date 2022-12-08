@@ -48,7 +48,7 @@ public class Day8 extends Base {
     }
 
     private boolean isTreeInSight(int y, int x, int treeHeight) {
-        if (y == 0 || x == 0 || y == height - 1 || x == width - 1) {
+        if (isTreeOnEdge(y, x)) {
             return true;
         }
         for (int[] dir : directions) {
@@ -81,8 +81,12 @@ public class Day8 extends Base {
         System.out.println(Arrays.stream(scores).flatMapToInt(x -> Arrays.stream(x)).max().getAsInt());
     }
 
+    private boolean isTreeOnEdge(int y, int x) {
+        return y == 0 || x == 0 || y == height - 1 || x == width - 1;
+    }
+
     private int calculateScenicScores(int y, int x, int treeHeight) {
-        if (y == 0 || x == 0 || y == height - 1 || x == width - 1) {
+        if (isTreeOnEdge(y, x)) {
             return 0;
         }
         int[] scores = new int[4];
