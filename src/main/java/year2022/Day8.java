@@ -11,7 +11,7 @@ public class Day8 extends Base {
     private static int height;
     private static int[][] grid;
     private static int[][] directions;
-    private static int[][] scores;
+    private static Tree[][] scores;
 
     public static void main(String[] args) throws IOException {
         Day8 main = new Day8();
@@ -39,7 +39,7 @@ public class Day8 extends Base {
         long score = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (isTreeInSight(y, x, grid[y][x])) {
+                if (mapToTree(y, x, grid[y][x]).visible) {
                     score++;
                 }
             }
@@ -47,47 +47,27 @@ public class Day8 extends Base {
         System.out.println(score);
     }
 
-    private boolean isTreeInSight(int y, int x, int treeHeight) {
-        if (isTreeOnEdge(y, x)) {
-            return true;
-        }
-        for (int[] dir : directions) {
-            int nextY = y + dir[0];
-            int nextX = x + dir[1];
-            boolean treeVisibleFromDirection = true;
-            while (nextY >= 0 && nextY < height && nextX >= 0 && nextX < width && treeVisibleFromDirection) {
-                if (grid[nextY][nextX] >= treeHeight) {
-                    treeVisibleFromDirection = false;
-                }
-                nextY = nextY + dir[0];
-                nextX = nextX + dir[1];
-            }
-            if (treeVisibleFromDirection) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void part2() throws IOException {
-        scores = new int[height][width];
+        scores = new Tree[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                scores[y][x] = calculateScenicScores(y, x, grid[y][x]);
+                scores[y][x] = mapToTree(y, x, grid[y][x]);
             }
         }
 
-        System.out.println(Arrays.stream(scores).flatMapToInt(x -> Arrays.stream(x)).max().getAsInt());
+        System.out.println(Arrays.stream(scores).flatMapToInt(x -> Arrays.stream(x).mapToInt(t -> t.getScore())).max().getAsInt());
     }
 
     private boolean isTreeOnEdge(int y, int x) {
         return y == 0 || x == 0 || y == height - 1 || x == width - 1;
     }
 
-    private int calculateScenicScores(int y, int x, int treeHeight) {
+    private Tree mapToTree(int y, int x, int treeHeight) {
+        Tree tree = new Tree();
         if (isTreeOnEdge(y, x)) {
-            return 0;
+            tree.visible = true;
+            return tree;
         }
         int[] scores = new int[4];
         for (int i = 0; i < directions.length; i++) {
@@ -99,14 +79,26 @@ public class Day8 extends Base {
             while (nextY >= 0 && nextY < height && nextX >= 0 && nextX < width && treeVisibleFromDirection) {
                 directionScore++;
                 if (grid[nextY][nextX] >= treeHeight) {
+                    treeVisibleFromDirection = false;
                     break;
                 }
                 nextY = nextY + dir[0];
                 nextX = nextX + dir[1];
             }
+            if (treeVisibleFromDirection) {
+                tree.visible = true;
+            }
             scores[i] = directionScore;
         }
+        tree.score = scores[0] * scores[1] * scores[2] * scores[3];
+        return tree;
+    }
 
-        return scores[0] * scores[1] * scores[2] * scores[3];
+    class Tree {
+        private boolean visible;
+        private int score;
+        public int getScore() {
+            return score;
+        }
     }
 }

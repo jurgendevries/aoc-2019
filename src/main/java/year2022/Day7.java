@@ -56,12 +56,10 @@ public class Day7 extends Base {
         if (instruction.startsWith("$ cd")) {
             String driveName = instruction.split(" ")[2];
             if ("..".equals(driveName)) {
-                currentDrive.setListed(true);
                 currentDrive = currentDrive.getParent();
             } else if ("/".equals(driveName)) {
                 currentDrive = new Drive("/");
             } else {
-                currentDrive.setListed(true);
                 currentDrive = currentDrive.getChildren().stream().filter(x -> driveName.equals(x.getName())).findFirst().get();
             }
         } else if (instruction.startsWith("$ ls")) {
@@ -76,10 +74,7 @@ public class Day7 extends Base {
                     currentDrive.getChildren().add(newDrive);
                 }
             } else {
-                // ls done in currentDrive
-                if (!currentDrive.isListed()) {
-                    currentDrive.setSize(currentDrive.getSize() + Long.valueOf(instruction.split(" ")[0]));
-                }
+                currentDrive.setSize(currentDrive.getSize() + Long.valueOf(instruction.split(" ")[0]));
             }
         }
     }
@@ -103,7 +98,6 @@ public class Day7 extends Base {
         private long size;
         private Drive parent;
         private List<Drive> children;
-        private boolean listed;
 
         public Drive(String name) {
             this.name = name;
@@ -140,14 +134,6 @@ public class Day7 extends Base {
 
         public void setChildren(List<Drive> children) {
             this.children = children;
-        }
-
-        public boolean isListed() {
-            return listed;
-        }
-
-        public void setListed(boolean listed) {
-            this.listed = listed;
         }
     }
 }
