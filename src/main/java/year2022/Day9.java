@@ -108,20 +108,6 @@ public class Day9 extends Base {
                         if (xDif < 0) {
                             newTail.x -= 1;
                         }
-                    } else {
-                        // situations
-                        if (xDif > 1) {
-                            newTail.x += 1;
-                        } else if (xDif < -1) {
-                            // 3-5 = -2 -> tail.x - 1
-                            newTail.x -= 1;
-                        }
-
-                        if (yDif > 1) {
-                            newTail.y += 1;
-                        } else if (yDif < -1) {
-                            newTail.y -= 1;
-                        }
                     }
                 }
             }
