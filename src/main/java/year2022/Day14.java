@@ -4,11 +4,11 @@ import base.Base;
 
 import java.io.IOException;
 
-public class Day13 extends Base {
-    private static final String INPUT = "2022/day13-test.txt";
+public class Day14 extends Base {
+    private static final String INPUT = "2022/day14-test.txt";
 
     public static void main(String[] args) throws IOException {
-        Day13 main = new Day13();
+        Day14 main = new Day14();
         main.mainMethod(INPUT);
         main.prepareInput();
         long start = System.currentTimeMillis();
