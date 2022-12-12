@@ -66,7 +66,9 @@ public class Day12 extends Base {
                     if (newY >= 0 && newY < height && newX >= 0 && newX < width) {
                         String newgridVal = grid[newY][newX].equals("S") ? "a" : grid[newY][newX].equals("E") ? "z" : grid[newY][newX];
                         char newVal = newgridVal.toCharArray()[0];
-                        if (newVal - currentVal <= 1) {
+                        // currently searching reversed (end-start) reverse currentVal/newVal to search start-end
+                        //if (newVal - currentVal <= 1) {
+                        if (currentVal - newVal <= 1) {
                             Vertex connectedVertex = heightGraph.getVertexByValue(newY + "-" + newX + "-" + newgridVal);
                             heightGraph.addEdge(currentVertex, connectedVertex, 1);
                         }
@@ -78,11 +80,23 @@ public class Day12 extends Base {
 
     @Override
     public void part1() throws IOException {
-        Dijkstra.shortestPathBetween(heightGraph, start, end);
+        // reversed: from E (end) to S (start)
+        Dijkstra.shortestPathBetween(heightGraph, end, start);
     }
 
     @Override
     public void part2() throws IOException {
+        // find shortest path from E (end) to any a
+        Dijkstra.shortestPathBetween(heightGraph, end, "a");
+    }
+
+    public void part1b() throws IOException {
+        // from S (start) to E (end)
+        Dijkstra.shortestPathBetween(heightGraph, start, end);
+    }
+
+    public void part2b() throws IOException {
+        // find distance from any 'a' to end and filter shortes
         List<Vertex> possibleStarts = new ArrayList<>();
         for (Vertex v : heightGraph.getVertices()) {
             String h = v.getData().split("-")[2];
@@ -101,6 +115,6 @@ public class Day12 extends Base {
             }
         }
 
-        System.out.println(resultStart.getData() + " - " + end.getData() + " - " + shortestRoute);
+        System.out.println(resultStart.getData() + " - " + end.getData() + " = " + shortestRoute);
     }
 }

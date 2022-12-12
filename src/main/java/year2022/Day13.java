@@ -22,7 +22,7 @@ public class Day13 extends Base {
 
     @Override
     public void part1() throws IOException {
-        
+
     }
 
     @Override

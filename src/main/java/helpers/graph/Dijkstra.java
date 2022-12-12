@@ -6,6 +6,7 @@ import helpers.graph.model.PriorityVertex;
 import helpers.graph.model.Vertex;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Dijkstra {
 
@@ -48,6 +49,19 @@ public class Dijkstra {
         int result = dijkstra(g, start).get(target);
         System.out.println("Shortest path between " + start.getData() + " - " + target.getData() + " = " + result);
         return result;
+    }
+
+    public static int shortestPathBetween(Graph g, Vertex start, String targetData) {
+        Map<Vertex, Integer> results = dijkstra(g, start);
+        Map.Entry<Vertex, Integer> res = results.entrySet()
+                .stream()
+                .filter(x -> x.getKey().getData().contains(targetData))
+                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .limit(1)
+                .collect(Collectors.toList()).get(0);
+
+        System.out.println("Shortest path between " + start.getData() + " - " + res.getKey().getData() + " = " + res.getValue());
+        return res.getValue();
     }
 
     public static void dijkstraResultPrinter(Map<Vertex, Integer> distances) {
