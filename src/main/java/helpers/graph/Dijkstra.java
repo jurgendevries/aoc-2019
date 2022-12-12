@@ -44,8 +44,10 @@ public class Dijkstra {
         return distances;
     }
 
-    public static void shortestPathBetween(Graph g, Vertex start, Vertex target) {
-        System.out.println("Shortest path between " + start.getData() + " - " + target.getData() + " = " + dijkstra(g, start).get(target));
+    public static int shortestPathBetween(Graph g, Vertex start, Vertex target) {
+        int result = dijkstra(g, start).get(target);
+        System.out.println("Shortest path between " + start.getData() + " - " + target.getData() + " = " + result);
+        return result;
     }
 
     public static void dijkstraResultPrinter(Map<Vertex, Integer> distances) {
