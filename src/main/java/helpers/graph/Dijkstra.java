@@ -64,6 +64,14 @@ public class Dijkstra {
         return res.getValue();
     }
 
+    public static Map<Vertex, Integer> allPathsBetween(Graph g, Vertex start, String targetData) {
+        Map<Vertex, Integer> results = dijkstra(g, start);
+        Map<Vertex, Integer> res = results.entrySet()
+                .stream()
+                .filter(x -> x.getKey().getData().contains(targetData)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return res;
+    }
+
     public static void dijkstraResultPrinter(Map<Vertex, Integer> distances) {
         System.out.println("Shortest routes:");
         for (Map.Entry<Vertex, Integer> entry : distances.entrySet()) {

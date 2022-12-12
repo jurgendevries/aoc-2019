@@ -6,9 +6,8 @@ import helpers.graph.model.Graph;
 import helpers.graph.model.Vertex;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Day12 extends Base {
     private static final String INPUT = "2022/day12-input.txt";
@@ -19,6 +18,7 @@ public class Day12 extends Base {
     private Vertex start = null;
     private Vertex end = null;
     private Graph heightGraph = new Graph(true, true);
+    private Map<Vertex, Integer> routeResults;
 
     public static void main(String[] args) throws IOException {
         Day12 main = new Day12();
@@ -80,22 +80,39 @@ public class Day12 extends Base {
 
     @Override
     public void part1() throws IOException {
-        // reversed: from E (end) to S (start)
-        Dijkstra.shortestPathBetween(heightGraph, end, start);
+        // reversed: find from E (end) to all a's and filter start
+        routeResults = Dijkstra.allPathsBetween(heightGraph, end, "a");
+        System.out.println("Shortest path between " + end.getData() + " - " + start.getData() + " = " + routeResults.get(start));
     }
 
     @Override
     public void part2() throws IOException {
+        // find all routes from E (end) to any a and filter shortest path
+        Map.Entry<Vertex, Integer> res = routeResults.entrySet()
+                .stream()
+                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .limit(1)
+                .collect(Collectors.toList()).get(0);
+
+        System.out.println("Shortest path between " + start.getData() + " - " + res.getKey().getData() + " = " + res.getValue());
+    }
+
+    public void part1b() throws IOException {
+        // reversed: from E (end) to S (start)
+        Dijkstra.shortestPathBetween(heightGraph, end, start);
+    }
+
+    public void part2b() throws IOException {
         // find shortest path from E (end) to any a
         Dijkstra.shortestPathBetween(heightGraph, end, "a");
     }
 
-    public void part1b() throws IOException {
+    public void part1c() throws IOException {
         // from S (start) to E (end)
         Dijkstra.shortestPathBetween(heightGraph, start, end);
     }
 
-    public void part2b() throws IOException {
+    public void part2c() throws IOException {
         // find distance from any 'a' to end and filter shortes
         List<Vertex> possibleStarts = new ArrayList<>();
         for (Vertex v : heightGraph.getVertices()) {
