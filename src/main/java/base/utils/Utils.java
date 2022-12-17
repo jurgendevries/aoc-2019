@@ -85,9 +85,13 @@ public class Utils {
     }
 
     public static void printGrid(int width, int height, String[][] grid) {
-        for (int y = 0; y < height; y++) {
+        printGrid(width, height, 0, 0, grid);
+    }
+
+    public static void printGrid(int width, int height, int startX, int startY, String[][] grid) {
+        for (int y = startY; y < height; y++) {
             StringBuilder sb = new StringBuilder();
-            for (int x = 0; x < width; x++) {
+            for (int x = startX; x < width; x++) {
                 sb.append(grid[y][x]);
             }
             System.out.println(sb);
