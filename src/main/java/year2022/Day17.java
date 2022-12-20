@@ -15,7 +15,9 @@ public class Day17 extends Base {
     private static final int NUMBER_OF_BLOCKS = 5;
     private static final int GRID_WIDTH = 7;
 
+    private static long lowestPoint;
     private static long maxGameHeight;
+    private static long actualBottom;
     private static int currentPush = 0;
     private static List<Block> blocks = new ArrayList<>();
     private static String[][] grid;
@@ -23,9 +25,13 @@ public class Day17 extends Base {
     public static void main(String[] args) throws IOException {
         Day17 main = new Day17();
         long start = System.currentTimeMillis();
-        maxGameHeight = NUMBER_OF_ROCKS / NUMBER_OF_BLOCKS * BLOCKS_TOTAL_HEIGHT;
-        grid = new String[(int) maxGameHeight][7];
-        for (int y = 0; y < maxGameHeight; y++) {
+//        maxGameHeight = NUMBER_OF_ROCKS / NUMBER_OF_BLOCKS * BLOCKS_TOTAL_HEIGHT;
+        lowestPoint = 999;
+                //NUMBER_OF_ROCKS / NUMBER_OF_BLOCKS * BLOCKS_TOTAL_HEIGHT;
+        maxGameHeight = 10;
+        actualBottom = 10;
+        grid = new String[(int) lowestPoint + 1][7];
+        for (int y = 0; y < lowestPoint; y++) {
             grid[y] = ".......".split("");
         }
         main.buildBlocks();
@@ -58,18 +64,40 @@ public class Day17 extends Base {
 
     @Override
     public void part1() throws IOException {
-        long currentBottom = maxGameHeight;
+        long currentBottom = lowestPoint;
         int i = 0;
         while (i < NUMBER_OF_ROCKS) {
             Block currentBlock = blocks.get(i % NUMBER_OF_BLOCKS);
             currentBottom = dropBlock(currentBottom, currentBlock);
             i++;
         }
-        System.out.println("Done: " + currentBottom + " - " + (maxGameHeight - currentBottom));
+        //System.out.println("Done: " + currentBottom + " - " + (lowestPoint - currentBottom));
+        System.out.println("Done: " + actualBottom + " - " + currentBottom + " - " + lowestPoint);
+    }
+
+    private void shiftCurrentGrid(int offset) {
+        String[][] tempGrid = new String[(int)lowestPoint][GRID_WIDTH];
+        for (int y = 0; y < lowestPoint; y++) {
+            for (int x = 0; x < GRID_WIDTH; x++) {
+                if (y < offset) {
+                    tempGrid[y] = ".......".split("");
+                } else {
+                    tempGrid[y][x] = grid[y - offset][x];
+                }
+            }
+        }
+        actualBottom += offset;
+
     }
 
     private long dropBlock(long currentBottom, Block block) {
         long currentY = currentBottom - block.height - 3;
+        if (currentY < 0) {
+            currentY = currentY + 50;
+            currentBottom += 50;
+            // shift grid 100 y pixels down
+            shiftCurrentGrid((int) currentY);
+        }
         int currentX = 2;
         boolean stopped = false;
 
@@ -95,8 +123,8 @@ public class Day17 extends Base {
         }
 
         // print grid
-//        Utils.printGrid(GRID_WIDTH, maxGameHeight, 0, currentY < currentBottom ? currentY : currentBottom, grid);
-//        System.out.println("");
+        Utils.printGrid(GRID_WIDTH, (int) lowestPoint, 0, currentY < currentBottom ? (int) currentY : (int) currentBottom, grid);
+        System.out.println("");
         // determine new currentLine
         return currentY < currentBottom ? currentY : currentBottom;
     }
@@ -109,7 +137,7 @@ public class Day17 extends Base {
                     int testX = currentX + x + move[1];
                     long testY = currentY + y + move[0];
                     if (
-                            currentY + y + move[0] >= maxGameHeight || (
+                            currentY + y + move[0] >= lowestPoint || (
                                     block.grid[y][x].equals("#") &&
                                     grid[(int) testY][testX].equals("#")
                             )
