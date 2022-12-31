@@ -24,7 +24,7 @@ public class Day22 extends Base {
         main.prepareInput();
         long start = System.currentTimeMillis();
         System.out.println("PART1:");
-        //main.part1();
+        main.part1();
         System.out.println("PART2:");
         main.part2();
         long end = System.currentTimeMillis();
