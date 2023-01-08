@@ -1,7 +1,6 @@
 package year2022;
 
 import base.Base;
-import year2021.day23.Main;
 
 import java.io.IOException;
 import java.util.*;
@@ -18,8 +17,8 @@ public class Day16 extends Base {
         main.mainMethod(INPUT);
         main.prepareInput();
         long start = System.currentTimeMillis();
-        System.out.println("PART1:");
-        main.part1();
+//        System.out.println("PART1:");
+//        main.part1();
         System.out.println("PART2:");
         main.part2();
         long end = System.currentTimeMillis();
@@ -48,38 +47,113 @@ public class Day16 extends Base {
     public void part1() throws IOException {
         List<Valve> valves = readValves();
         Valve currentValve = valves.stream().filter(v -> v.id.equals("AA")).findFirst().get();
+        State startState = new State(valves, currentValve, 0, 30);
+        move(startState);
+
+        int topScore = scores.stream().mapToInt(x -> x).max().orElse(0);
+        System.out.println(topScore);
+
+//        System.out.println("Part2:");
+//        // get state from known states
+//
+//        List<Map.Entry<String, Integer>> endStates = knownStates.entrySet().stream().filter(k -> "0".equals(k.getKey().split("-")[2])).collect(Collectors.toList());
+//        for (Map.Entry<String, Integer> endState : endStates) {
+//            // find inverted state at time 0
+//
+//            // find all closed valves
+//            // find all opened valves
+//        }
+//
+//        String state = knownStates.entrySet().stream().filter(x -> x.getValue() == topScore).findFirst().get().getKey();
+//        // GS:closed;CB:closedTP:closedFI:closedWV:closedEA:openAT:closedWS:closedMP:closedGE:closedSA:openNI:closedGO:closedIT:closedNG:closedRD:closedLR:openTO:closedWF:closedYD:closedXR:closedKF:closedOO:closedHG:closedCT:closedDA:closedYY:closedVW:closedRC:closedPL:closedTH:openQN:openXE:closedXP:closedAX:closedEM:closedNR:closedYG:openPM:closedAY:closedGJ:closedLC:closedUD:closedAA:closedOM:closedWB:closedGW:openNA:closedXX:closedZO:closedKB:open-AY-0 -> {Integer@1018} 1366
+//
+//
+//        // for all states find the inverted state and combine values
+//
+//        // highest total value wins
+//
+//
+//        for (Valve valve : valves) {
+//            for (String valveState : state.split(";")) {
+//                if (valve.id.equals(valveState.split(":")[0])) {
+//                    valve.open = valveState.split(":")[1].equals("open");
+//                    break;
+//                }
+//            }
+//        }
+//        System.out.println(state);
+//        scores = new HashSet<>();
+//        State elephantStartState = new State(valves, currentValve, 0, 26);
+//        move(elephantStartState);
+//        int topElephantScore = scores.stream().mapToInt(x -> x).max().orElse(0);
+//        System.out.println(topElephantScore);
+//
+//        System.out.println(topElephantScore+ topScore);
+    }
+
+    @Override
+    public void part2() throws IOException {
+        List<Valve> valves = readValves();
+        Valve currentValve = valves.stream().filter(v -> v.id.equals("AA")).findFirst().get();
         State startState = new State(valves, currentValve, 0, 26);
         move(startState);
 
         int topScore = scores.stream().mapToInt(x -> x).max().orElse(0);
         System.out.println(topScore);
 
-        System.out.println("Part2:");
-        // get state from known states
-        String state = knownStates.entrySet().stream().filter(x -> x.getValue() == topScore).findFirst().get().getKey();
-        // GS:closed;CB:closedTP:closedFI:closedWV:closedEA:openAT:closedWS:closedMP:closedGE:closedSA:openNI:closedGO:closedIT:closedNG:closedRD:closedLR:openTO:closedWF:closedYD:closedXR:closedKF:closedOO:closedHG:closedCT:closedDA:closedYY:closedVW:closedRC:closedPL:closedTH:openQN:openXE:closedXP:closedAX:closedEM:closedNR:closedYG:openPM:closedAY:closedGJ:closedLC:closedUD:closedAA:closedOM:closedWB:closedGW:openNA:closedXX:closedZO:closedKB:open-AY-0 -> {Integer@1018} 1366
 
-        for (Valve valve : valves) {
-            for (String valveState : state.split(";")) {
-                if (valve.id.equals(valveState.split(":")[0])) {
-                    valve.open = valveState.split(":")[1].equals("open");
-                    break;
-                }
+        int maxVal = Integer.MIN_VALUE;
+//        get all endstates from known states
+        List<Map.Entry<String, Integer>> endStates = knownStates.entrySet().stream().filter(k -> "0".equals(k.getKey().split("-")[2])).collect(Collectors.toList());
+        for (Map.Entry<String, Integer> endState : endStates) {
+            // get open/closed:
+            String openClosedVales = endState.getKey().split("-")[0];
+            String inverted = openClosedVales.replaceAll("0", "x").replaceAll("1", "0").replaceAll("x", "1");
+
+            // find max score for current openClosedValves situation:
+            int maxCurrentEndState = endStates.stream().filter(e -> openClosedVales.equals(e.getKey().split("-")[0])).collect(Collectors.toList()).stream().mapToInt(x -> x.getValue()).max().getAsInt();
+
+            // find inverted states at time 0
+            List<Map.Entry<String, Integer>> invertedStates = knownStates.entrySet().stream().filter(e -> inverted.equals(e.getKey().split("-")[0])).collect(Collectors.toList());
+
+            // get highest inverted
+            OptionalInt maxInvert = invertedStates.stream().mapToInt(x -> x.getValue()).max();
+            if (maxInvert.isPresent()) {
+
+                // combine values
+                int total = maxInvert.getAsInt() + endState.getValue();
+
+                maxVal = total > maxVal ? total : maxVal;
             }
+            // clean up endstates
         }
-        System.out.println(state);
-        scores = new HashSet<>();
-        State elephantStartState = new State(valves, currentValve, 0, 26);
-        move(elephantStartState);
-        int topElephantScore = scores.stream().mapToInt(x -> x).max().orElse(0);
-        System.out.println(topElephantScore);
-
-        System.out.println(topElephantScore+ topScore);
-    }
-
-    @Override
-    public void part2() throws IOException {
-
+        System.out.println(maxVal);
+//
+//        String state = knownStates.entrySet().stream().filter(x -> x.getValue() == topScore).findFirst().get().getKey();
+//        // GS:closed;CB:closedTP:closedFI:closedWV:closedEA:openAT:closedWS:closedMP:closedGE:closedSA:openNI:closedGO:closedIT:closedNG:closedRD:closedLR:openTO:closedWF:closedYD:closedXR:closedKF:closedOO:closedHG:closedCT:closedDA:closedYY:closedVW:closedRC:closedPL:closedTH:openQN:openXE:closedXP:closedAX:closedEM:closedNR:closedYG:openPM:closedAY:closedGJ:closedLC:closedUD:closedAA:closedOM:closedWB:closedGW:openNA:closedXX:closedZO:closedKB:open-AY-0 -> {Integer@1018} 1366
+//
+//
+//        // for all states find the inverted state and combine values
+//
+//        // highest total value wins
+//
+//
+//        for (Valve valve : valves) {
+//            for (String valveState : state.split(";")) {
+//                if (valve.id.equals(valveState.split(":")[0])) {
+//                    valve.open = valveState.split(":")[1].equals("open");
+//                    break;
+//                }
+//            }
+//        }
+//        System.out.println(state);
+//        scores = new HashSet<>();
+//        State elephantStartState = new State(valves, currentValve, 0, 26);
+//        move(elephantStartState);
+//        int topElephantScore = scores.stream().mapToInt(x -> x).max().orElse(0);
+//        System.out.println(topElephantScore);
+//
+//        System.out.println(topElephantScore+ topScore);
     }
 
     private void move(State currentState) {
@@ -156,7 +230,8 @@ public class Day16 extends Base {
     private String getStateString(List<Valve> valves, int time, String current) {
         StringBuilder stateString = new StringBuilder();
         for (Valve valve : valves) {
-            stateString.append(valve.id + ":" + (valve.open ? "open" : "closed") + ";");
+            //stateString.append(valve.id + ":" + (valve.open ? "open" : "closed") + ";");
+            stateString.append(valve.open ? "1" : "0");
         }
         stateString.append("-" + current + "-" + time);
         return stateString.toString();
