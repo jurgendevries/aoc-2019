@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 public class Day22 extends Base {
-    private static final String INPUT = "2022/day22-test.txt";
+    private static final String INPUT = "2022/day22-input.txt";
 
     private static int width;
     private static int height;
@@ -25,10 +25,9 @@ public class Day22 extends Base {
         main.prepareInput();
         long start = System.currentTimeMillis();
         System.out.println("PART1:");
-        //main.part1();
+        main.part1();
         System.out.println("PART2:");
-        //main.part2();
-        main.part2b();
+        main.part2();
         long end = System.currentTimeMillis();
         System.out.println("duration: " + (end - start));
 
@@ -69,9 +68,8 @@ public class Day22 extends Base {
         // 0       1      2      3
         // right - down - left - up
         directions = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-        Utils.printGrid(width, height, grid);
+//        Utils.printGrid(width, height, grid);
         currentDirection = 0;
-//        System.out.println(passPhrase);
     }
 
     @Override
@@ -83,11 +81,11 @@ public class Day22 extends Base {
         for (int i = 0; i < distances.length; i++) {
             int dist = distances[i];
             // move
-            move(dist, current, false);
+            move(dist, current, null, false);
             currentDirection = changeDir(i, directionChanges, currentDirection);
         }
 
-        Utils.printGrid(width, height, grid);
+//        Utils.printGrid(width, height, grid);
         System.out.println("Done: [" + (current.x + 1) + "," + (current.y + 1) + "]");
         int resultX = current.x + 1;
         int resultY = current.y + 1;
@@ -96,11 +94,11 @@ public class Day22 extends Base {
 
     }
 
-    private void move(int dist, Coord c, boolean part2) {
+    private void move(int dist, Coord c, Cube cube, boolean part2) {
         boolean canMove = true;
         int moves = 0;
         while (canMove && moves < dist) {
-            Coord newC = part2 ? getNewCoord2(c) : getNewCoord(c);
+            Coord newC = part2 ? getNewCoordB(c, cube) : getNewCoord(c);
             if (c.x != newC.x || c.y != newC.y) {
                 grid[c.y][c.x] = currentDirection == 0 ? ">" : currentDirection == 1 ? "v" : currentDirection == 2 ? "<" : "^";
                 c.x = newC.x;
@@ -110,129 +108,6 @@ public class Day22 extends Base {
                 canMove = false;
             }
         }
-    }
-
-    private Coord getNewCoord2(Coord c) {
-        Coord newC = new Coord(c.x + directions[currentDirection][1], c.y + directions[currentDirection][0]);
-        if (newC.x < 0 || newC.x >= width || newC.y < 0 || newC.y >= height || " ".equals(grid[newC.y][newC.x])) {
-            // outside grid or empty space -> wrap around get first space in next cube face
-
-            // determine current cube face
-            String currentFace;
-            if (c.x >= 50 && c.x <= 99 && c.y >= 0 && c.y <= 49) {
-                currentFace = "A";
-            } else if (c.x >= 100 && c.x <= 149 && c.y >= 0 && c.y <= 49) {
-                currentFace = "B";
-            } else if (c.x >= 50 && c.x <= 99 && c.y >= 50 && c.y <= 99) {
-                currentFace = "C";
-            } else if (c.x >= 50 && c.x <= 99 && c.y >= 100 && c.y <= 149) {
-                currentFace = "D";
-            } else if (c.x >= 0 && c.x <= 49 && c.y >= 100 && c.y <= 149) {
-                currentFace = "E";
-            } else {
-                currentFace = "F";
-            }
-            String move = currentFace + currentDirection;
-            // use dir to determine next cube face and dir
-            switch (move) {
-                case "A2":
-                    currentDirection = 0;
-                    newC.x = 0;
-                    newC.y = 149 - c.y;
-                    // dir 2 -> left goes to E (move is to the right) X = 0++, Y = 149 - current Y
-                    break;
-                case "A3":
-                    currentDirection = 0;
-                    newC.x = 0;
-                    newC.y = 100 + c.x;
-                    // dir 3 -> up goes to F (move is to the right) X = 0++, Y = 150 + current X
-                    break;
-                case "B0":
-                    currentDirection = 2;
-                    newC.x = 99;
-                    newC.y = 149 - c.y;
-                    // dir 0 -> right goes to D (move is to left) X = 99, Y = 149 - current Y
-                    break;
-                case "B1":
-                    currentDirection = 2;
-                    newC.x = 99;
-                    newC.y = c.x - 50;
-                    // dir 1 -> down goes to C (move is to left) X = 99, Y = current X - 50
-                    break;
-                case "B3":
-                    currentDirection = 3;
-                    newC.x = c.x - 100;
-                    newC.y = 199;
-                    // dir 3 -> up goes to F ( move is up) X = current X - 100, Y = 199
-                    break;
-                case "C0":
-                    currentDirection = 3;
-                    newC.x = 50 + c.y;
-                    newC.y = 49;
-                    // dir 0 -> right goes to B (move is up) X = current Y + 50, Y = 49
-                    break;
-                case "C2":
-                    currentDirection = 1;
-                    newC.x = c.y - 50;
-                    newC.y = 100;
-                    // dir 2 -> left goes to E (move is down) X = current Y - 50, Y = 100
-                    break;
-                case "D0":
-                    currentDirection = 2;
-                    newC.x = 149;
-                    newC.y = 149 - c.y;
-                    // dir 0 -> right goes to B (move is left) X = 149, Y = 149 - current Y
-                    break;
-                case "D1":
-                    currentDirection = 2;
-                    newC.x = 49;
-                    newC.y = 100 + c.x;
-                    // dir 1 -> down goes to F (move is lef) X = 49, Y = 100 + current X
-                    break;
-                case "E2":
-                    currentDirection = 0;
-                    newC.x = 50;
-                    newC.y = 149 - c.y;
-                    // dir 2 -> left goes to A (move is right) X = 50, Y = 149 - current Y
-                    break;
-                case "E3":
-                    currentDirection = 0;
-                    newC.x = 50;
-                    newC.y = 50 + c.x;
-                    // dir 3 -> up goes to C (move is right) X = 50, Y = 50 + current X
-                    break;
-                case "F0":
-                    currentDirection = 3;
-                    newC.x = c.y - 100;
-                    newC.y = 149;
-                    // dir 0 -> right goes to D (move is up) X = current Y - 100, Y = 149
-                    break;
-                case "F1":
-                    currentDirection = 1;
-                    newC.x = 100 + c.x;
-                    newC.y = 0;
-                    // dir 1 -> down goes to B (move is down) X = current X + 100, Y = 0
-                    break;
-                case "F2":
-                    currentDirection = 1;
-                    newC.x = c.y - 100;
-                    newC.y = 0;
-                    // dir 2 -> left goes to A (move is down) X = current Y - 100 , Y = 0
-                    break;
-                default:
-                    throw new IllegalArgumentException("Impossible move!");
-            }
-            return newC;
-        } else if ("#".equals(grid[newC.y][newC.x])) {
-        // hits wall -> return current coordinate (no move)
-            return c;
-        } else if (".".equals(grid[newC.y][newC.x])  || ">".equals(grid[newC.y][newC.x]) || "v".equals(grid[newC.y][newC.x]) || "<".equals(grid[newC.y][newC.x]) || "^".equals(grid[newC.y][newC.x])) {
-            // '.' -> just move to next open space (move)
-            return newC;
-        }
-        System.out.println("Can we get here???");
-
-        return null;
     }
 
     private Coord getNewCoord(Coord c) {
@@ -310,121 +185,23 @@ public class Day22 extends Base {
         int[] distances = Arrays.stream(passPhrase.split("\\D")).mapToInt(x -> Integer.parseInt(x)).toArray();
         String[] directionChanges = passPhrase.split("\\d+");
         currentDirection = 0;
-        for (int i = 0; i < distances.length; i++) {
-            int dist = distances[i];
-            // move
-            move(dist, current, true);
-            currentDirection = changeDir(i, directionChanges, currentDirection);
-        }
-        Utils.printGrid(width, height, grid);
-        System.out.println("Done: [" + (current.x + 1) + "," + (current.y + 1) + "]");
-        int resultX = current.x + 1;
-        int resultY = current.y + 1;
-        int result = 1000 * resultY + 4 * resultX + currentDirection;
-        System.out.println(result);
-    }
 
-    public void part2b() throws IOException {
-        readInput();
-        int[] distances = Arrays.stream(passPhrase.split("\\D")).mapToInt(x -> Integer.parseInt(x)).toArray();
-        String[] directionChanges = passPhrase.split("\\d+");
-        currentDirection = 0;
-
-        // create cube
-        Map<Integer, String> connectionsA = new HashMap<>();
-        connectionsA.put(0, "F2");
-        connectionsA.put(3, "B1");
-        connectionsA.put(2, "C1");
-        Face a = new Face("A", 8, 11, 0, 3, connectionsA, (Integer x, Integer y) -> 15, (Integer x, Integer y) -> 11 - y,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> y + 4, (Integer x, Integer y) -> 4,
-                (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 4
-        );
-
-        Map<Integer, String> connectionsB = new HashMap<>();
-        connectionsB.put(1, "E3");
-        connectionsB.put(2, "F3");
-        connectionsB.put(3, "A1");
-        Face b = new Face("B", 0, 3, 4, 7, connectionsB, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 11,
-                (Integer x, Integer y) -> 19 - y, (Integer x, Integer y) -> 11,
-                (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 0
-        );
-
-        Map<Integer, String> connectionsC = new HashMap<>();
-        connectionsC.put(1, "E0");
-        connectionsC.put(3, "A0");
-        Face c = new Face("C", 4, 7, 4, 7, connectionsC, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> 8, (Integer x, Integer y) -> 15 - x,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> 8, (Integer x, Integer y) -> x - 4
-        );
-
-        Map<Integer, String> connectionsD = new HashMap<>();
-        connectionsD.put(0, "F1");
-        Face d = new Face("D", 8, 11, 4, 7, connectionsD, (Integer x, Integer y) -> 19 - y, (Integer x, Integer y) -> 8,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
-        );
-
-        Map<Integer, String> connectionsE = new HashMap<>();
-        connectionsE.put(1, "B3");
-        connectionsE.put(2, "C3");
-        Face e = new Face("E", 8, 11, 8, 11, connectionsE, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 7,
-                (Integer x, Integer y) -> 15 - y, (Integer x, Integer y) -> 7,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
-        );
-
-        Map<Integer, String> connectionsF = new HashMap<>();
-        connectionsF.put(0, "A2");
-        connectionsF.put(1, "B0");
-        connectionsF.put(3, "D2");
-        Face f = new Face("F", 12, 15, 8, 11, connectionsF, (Integer x, Integer y) -> 11, (Integer x, Integer y) -> 11 - y,
-                (Integer x, Integer y) -> 0, (Integer x, Integer y) -> 19 - x,
-                (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
-                (Integer x, Integer y) -> 11, (Integer x, Integer y) -> 19 - x
-        );
-        List<Face> faces = new ArrayList<>();
-        faces.add(a);
-        faces.add(b);
-        faces.add(c);
-        faces.add(d);
-        faces.add(e);
-        faces.add(f);
-        Cube cube = new Cube(faces);
-
+        Cube cube = createCube(false);
+//        Cube cube = createCube(true);
 
         for (int i = 0; i < distances.length; i++) {
             int dist = distances[i];
             // move
-            moveB(dist, current, cube);
+            move(dist, current, cube, true);
             currentDirection = changeDir(i, directionChanges, currentDirection);
         }
         System.out.println();
-        Utils.printGrid(width, height, grid);
+//        Utils.printGrid(width, height, grid);
         System.out.println("Done: [" + (current.x + 1) + "," + (current.y + 1) + "]");
         int resultX = current.x + 1;
         int resultY = current.y + 1;
         int result = 1000 * resultY + 4 * resultX + currentDirection;
         System.out.println(result);
-    }
-
-    private void moveB(int dist, Coord c, Cube cube) {
-        boolean canMove = true;
-        int moves = 0;
-        while (canMove && moves < dist) {
-            Coord newC = getNewCoordB(c, cube);
-            if (c.x != newC.x || c.y != newC.y) {
-                grid[c.y][c.x] = currentDirection == 0 ? ">" : currentDirection == 1 ? "v" : currentDirection == 2 ? "<" : "^";
-                c.x = newC.x;
-                c.y = newC.y;
-                moves++;
-            } else {
-                canMove = false;
-            }
-        }
     }
 
     private Coord getNewCoordB(Coord c, Cube cube) {
@@ -442,10 +219,9 @@ public class Day22 extends Base {
             if (currentFace.connections.get(currentDirection) != null) {
                 // complex move to connecting face
                 String connection = currentFace.connections.get(currentDirection);
-                String newFaceId = connection.split("")[0];
+                int oldDir = currentDirection;
                 currentDirection = Integer.parseInt(connection.split("")[1]);
-                Face newFace = cube.faces.stream().filter(f -> newFaceId.equals(f.id)).findFirst().get();
-                switch (currentDirection) {
+                switch (oldDir) {
                     case 0:
                         newC.x = currentFace.detX0.apply(c.x, c.y);
                         newC.y = currentFace.detY0.apply(c.x, c.y);
@@ -461,6 +237,11 @@ public class Day22 extends Base {
                     default:
                         newC.x = currentFace.detX3.apply(c.x, c.y);
                         newC.y = currentFace.detY3.apply(c.x, c.y);
+                }
+                // check location on newFace is not "#"
+                if ("#".equals(grid[newC.y][newC.x])) {
+                    currentDirection = oldDir;
+                    return c;
                 }
             } else {
                 // impossible move!
@@ -493,6 +274,143 @@ public class Day22 extends Base {
             }
         }
         return currentDirection;
+    }
+
+    private Cube createCube(boolean test) {
+        if (test) {
+            // create cube
+            Map<Integer, String> connectionsA = new HashMap<>();
+            connectionsA.put(0, "F2");
+            connectionsA.put(3, "B1");
+            connectionsA.put(2, "C1");
+            Face a = new Face("A", 8, 11, 0, 3, connectionsA, (Integer x, Integer y) -> 15, (Integer x, Integer y) -> 11 - y,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> y + 4, (Integer x, Integer y) -> 4,
+                    (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 4
+            );
+
+            Map<Integer, String> connectionsB = new HashMap<>();
+            connectionsB.put(1, "E3");
+            connectionsB.put(2, "F3");
+            connectionsB.put(3, "A1");
+            Face b = new Face("B", 0, 3, 4, 7, connectionsB, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 11,
+                    (Integer x, Integer y) -> 19 - y, (Integer x, Integer y) -> 11,
+                    (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 0
+            );
+
+            Map<Integer, String> connectionsC = new HashMap<>();
+            connectionsC.put(1, "E0");
+            connectionsC.put(3, "A0");
+            Face c = new Face("C", 4, 7, 4, 7, connectionsC, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 8, (Integer x, Integer y) -> 15 - x,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 8, (Integer x, Integer y) -> x - 4
+            );
+
+            Map<Integer, String> connectionsD = new HashMap<>();
+            connectionsD.put(0, "F1");
+            Face d = new Face("D", 8, 11, 4, 7, connectionsD, (Integer x, Integer y) -> 19 - y, (Integer x, Integer y) -> 8,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
+            );
+
+            Map<Integer, String> connectionsE = new HashMap<>();
+            connectionsE.put(1, "B3");
+            connectionsE.put(2, "C3");
+            Face e = new Face("E", 8, 11, 8, 11, connectionsE, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 11 - x, (Integer x, Integer y) -> 7,
+                    (Integer x, Integer y) -> 15 - y, (Integer x, Integer y) -> 7,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
+            );
+
+            Map<Integer, String> connectionsF = new HashMap<>();
+            connectionsF.put(0, "A2");
+            connectionsF.put(1, "B0");
+            connectionsF.put(3, "D2");
+            Face f = new Face("F", 12, 15, 8, 11, connectionsF, (Integer x, Integer y) -> 11, (Integer x, Integer y) -> 11 - y,
+                    (Integer x, Integer y) -> 0, (Integer x, Integer y) -> 19 - x,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 11, (Integer x, Integer y) -> 19 - x
+            );
+            List<Face> faces = new ArrayList<>();
+            faces.add(a);
+            faces.add(b);
+            faces.add(c);
+            faces.add(d);
+            faces.add(e);
+            faces.add(f);
+            return new Cube(faces);
+        } else {
+
+            // create cube
+            Map<Integer, String> connectionsA = new HashMap<>();
+            connectionsA.put(2, "E0");
+            connectionsA.put(3, "F0");
+            Face a = new Face("A", 50, 99, 0, 49, connectionsA, (Integer x, Integer y) -> x, (Integer x, Integer y) ->  y,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 0, (Integer x, Integer y) -> 149 - y,
+                    (Integer x, Integer y) -> 0, (Integer x, Integer y) -> 100 + x
+            );
+
+            Map<Integer, String> connectionsB = new HashMap<>();
+            connectionsB.put(0, "D2");
+            connectionsB.put(1, "C2");
+            connectionsB.put(3, "F3");
+
+            Face b = new Face("B", 100, 149, 0, 49, connectionsB, (Integer x, Integer y) -> 99, (Integer x, Integer y) -> 149 - y,
+                    (Integer x, Integer y) -> 99, (Integer x, Integer y) -> x - 50,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> x - 100, (Integer x, Integer y) -> 199
+            );
+
+            Map<Integer, String> connectionsC = new HashMap<>();
+            connectionsC.put(0, "B3");
+            connectionsC.put(2, "E1");
+            Face c = new Face("C", 50, 99, 50, 99, connectionsC, (Integer x, Integer y) -> 50 + y, (Integer x, Integer y) -> 49,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> y - 50, (Integer x, Integer y) -> 100,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
+            );
+
+            Map<Integer, String> connectionsD = new HashMap<>();
+            connectionsD.put(0, "B2");
+            connectionsD.put(1, "F2");
+
+            Face d = new Face("D", 50, 99, 100, 149, connectionsD, (Integer x, Integer y) -> 149, (Integer x, Integer y) -> 149 - y,
+                    (Integer x, Integer y) -> 49, (Integer x, Integer y) -> 100 + x,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
+            );
+
+            Map<Integer, String> connectionsE = new HashMap<>();
+            connectionsE.put(2, "A0");
+            connectionsE.put(3, "C0");
+            Face e = new Face("E", 0, 49, 100, 149, connectionsE, (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y,
+                    (Integer x, Integer y) -> 50, (Integer x, Integer y) -> 149 - y,
+                    (Integer x, Integer y) -> 50, (Integer x, Integer y) -> 50 + x
+            );
+
+            Map<Integer, String> connectionsF = new HashMap<>();
+            connectionsF.put(0, "D3");
+            connectionsF.put(1, "B1");
+            connectionsF.put(2, "A1");
+            Face f = new Face("F", 0, 49, 150, 199, connectionsF, (Integer x, Integer y) -> y - 100, (Integer x, Integer y) -> 149,
+                    (Integer x, Integer y) -> 100 + x, (Integer x, Integer y) -> 0,
+                    (Integer x, Integer y) -> y - 100, (Integer x, Integer y) -> 0,
+                    (Integer x, Integer y) -> x, (Integer x, Integer y) -> y
+            );
+            List<Face> faces = new ArrayList<>();
+            faces.add(a);
+            faces.add(b);
+            faces.add(c);
+            faces.add(d);
+            faces.add(e);
+            faces.add(f);
+            return new Cube(faces);
+        }
     }
 
     class Cube {
